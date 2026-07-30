@@ -1,0 +1,17 @@
+{
+  "name": "constituency-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "multer": "^2.0.1",
+    "nanoid": "^5.0.9",
+    "ollama": "^0.5.14"
+  }
+}

@@ -1,0 +1,57 @@
+[
+  {
+    "ward": "Kanamai",
+    "population": 28400,
+    "primaryEnrollment": 6100,
+    "secondaryEnrollment": 1850,
+    "nearestSecondarySchoolKm": 9.2,
+    "nearestHealthFacilityKm": 6.5,
+    "waterAccessPct": 41,
+    "roadConditionScore": 3,
+    "existingVocationalCentres": 0
+  },
+  {
+    "ward": "Mtwapa",
+    "population": 51200,
+    "primaryEnrollment": 11200,
+    "secondaryEnrollment": 4300,
+    "nearestSecondarySchoolKm": 2.1,
+    "nearestHealthFacilityKm": 1.8,
+    "waterAccessPct": 68,
+    "roadConditionScore": 6,
+    "existingVocationalCentres": 1
+  },
+  {
+    "ward": "Shanzu",
+    "population": 19800,
+    "primaryEnrollment": 4600,
+    "secondaryEnrollment": 1200,
+    "nearestSecondarySchoolKm": 7.4,
+    "nearestHealthFacilityKm": 4.9,
+    "waterAccessPct": 52,
+    "roadConditionScore": 4,
+    "existingVocationalCentres": 0
+  },
+  {
+    "ward": "Junda",
+    "population": 33600,
+    "primaryEnrollment": 7900,
+    "secondaryEnrollment": 2100,
+    "nearestSecondarySchoolKm": 11.6,
+    "nearestHealthFacilityKm": 8.2,
+    "waterAccessPct": 33,
+    "roadConditionScore": 2,
+    "existingVocationalCentres": 0
+  },
+  {
+    "ward": "Bamburi",
+    "population": 46700,
+    "primaryEnrollment": 10500,
+    "secondaryEnrollment": 3900,
+    "nearestSecondarySchoolKm": 3.0,
+    "nearestHealthFacilityKm": 2.4,
+    "waterAccessPct": 71,
+    "roadConditionScore": 7,
+    "existingVocationalCentres": 2
+  }
+]
