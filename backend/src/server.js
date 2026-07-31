@@ -30,6 +30,16 @@ app.use(hotspotsRouter);
 app.use(statsRouter);
 app.use(ussdRouter);
 
+// Serves the built React app from the same origin/process as the API, so
+// the whole thing deploys as one Node service behind one public URL (no
+// CORS, no separate static host). Must be registered after every API
+// route above, since the SPA fallback below matches any unmatched GET.
+const frontendDist = path.join(__dirname, '..', '..', 'frontend', 'dist');
+app.use(express.static(frontendDist));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendDist, 'index.html'));
+});
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`Backend listening on http://localhost:${PORT}`);

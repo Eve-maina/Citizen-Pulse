@@ -1,4 +1,9 @@
-export const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+// In production the frontend is served by the same Express process as the
+// API (see server.js), so requests should just hit the current origin.
+// VITE_API_URL can still override this (e.g. if the frontend and backend
+// are ever split across two hosts).
+export const BASE_URL =
+  import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:4000' : '');
 
 export class RejectionError extends Error {
   constructor(reason, reasonSw) {
