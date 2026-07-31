@@ -16,6 +16,9 @@ export function Layout({ children }) {
           <Link to="/feed" className="nav-link">
             {t('feedNavLink')}
           </Link>
+          <Link to="/dashboard" className="nav-link">
+            {t('dashboardNavLink')}
+          </Link>
           <div className="lang-toggle" role="group" aria-label="Language">
             {LANGUAGES.map((l) => (
               <button

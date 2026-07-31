@@ -1,8 +1,20 @@
-import ollama from 'ollama';
+import { Ollama } from 'ollama';
 import { readFileSync } from 'node:fs';
 import { toolDefinitions, toolImplementations } from './tools.js';
 
-const MODEL = process.env.GEMMA_MODEL || 'gemma4:cloud';
+// Talks to Ollama Cloud directly over HTTPS with an API key, rather than
+// through a locally installed/signed-in Ollama daemon. This is what makes
+// the backend deployable anywhere — no OS-level Ollama install required.
+if (!process.env.OLLAMA_API_KEY) {
+  throw new Error('OLLAMA_API_KEY is not set. Create one at https://ollama.com/settings/keys');
+}
+
+const ollama = new Ollama({
+  host: 'https://ollama.com',
+  headers: { Authorization: `Bearer ${process.env.OLLAMA_API_KEY}` },
+});
+
+const MODEL = process.env.GEMMA_MODEL || 'gemma4';
 
 const TOPICS = [
   'Governance',
@@ -23,6 +35,32 @@ function extractJson(text) {
   const match = cleaned.match(/\{[\s\S]*\}/);
   if (!match) throw new Error(`No JSON object found in model output: ${cleaned}`);
   return JSON.parse(match[0]);
+}
+
+const RETRYABLE_CODES = new Set(['ECONNRESET', 'ETIMEDOUT', 'ECONNREFUSED', 'EPIPE']);
+
+function isRetryableNetworkError(err) {
+  return RETRYABLE_CODES.has(err?.code) || RETRYABLE_CODES.has(err?.cause?.code);
+}
+
+// Sequential calls to ollama.com occasionally hit a transient ECONNRESET or
+// ETIMEDOUT (observed reliably on the multi-turn tool-calling loop, which
+// makes several requests back to back) — a short retry with backoff clears
+// these without needing to understand the exact network cause.
+async function chatWithRetry(options, attempts = 3) {
+  let lastErr;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await ollama.chat(options);
+    } catch (err) {
+      lastErr = err;
+      if (!isRetryableNetworkError(err) || i === attempts - 1) throw err;
+      const delay = 500 * 2 ** i;
+      console.warn(`[ollama] transient network error (${err?.cause?.code || err?.code}), retrying in ${delay}ms...`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+  throw lastErr;
 }
 
 // Normalizes a raw citizen submission: detects language, translates to English,
@@ -62,7 +100,7 @@ Respond with ONLY a JSON object, no other text, in this exact shape:
 }
 If rejected is true, still fill in the other fields with your best effort.`;
 
-  const response = await ollama.chat({
+  const response = await chatWithRetry({
     model: MODEL,
     messages: [{ role: 'user', content: prompt, images }],
   });
@@ -106,7 +144,7 @@ Once you have gathered evidence, respond with ONLY a JSON object (no other text)
 
   // Tool-calling loop: keep feeding tool results back until the model returns a final answer.
   for (let turn = 0; turn < 6; turn++) {
-    const response = await ollama.chat({
+    const response = await chatWithRetry({
       model: MODEL,
       messages,
       tools: toolDefinitions,
