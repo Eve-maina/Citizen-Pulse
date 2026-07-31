@@ -85,6 +85,7 @@ export function Dashboard() {
           {ranking
             .slice()
             .sort((a, b) => a.rank - b.rank)
+            .slice(0, 8)
             .map((item) => (
               <li className="rank-item" key={`${item.title}-${item.ward}`}>
                 <div className="rank-header">
